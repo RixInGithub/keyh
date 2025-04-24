@@ -22,7 +22,7 @@ $wpfBrushToJrawBrush = {
 }
 
 $x = New-Object System.Xml.XmlNodeReader([xml]@"
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="keyh!" Width="214" Height="118">
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="keyh!" Width="214" Height="118" Icon="$PSScriptRoot\keyh.png">
 	<Grid>
 		<Button Name="lck" Content="hS LOCK" Margin="7.5" Padding="10 15" HorizontalAlignment="Left" VerticalAlignment="Top" Cursor="Hand" FontSize="24"/>
 		<Button Name="btn" Content="h" Margin="7.5" Padding="24 15" HorizontalAlignment="Right" VerticalAlignment="Top" Cursor="Hand" FontSize="24"/>
@@ -70,27 +70,29 @@ $win.Add_Closed({[System.Windows.Threading.Dispatcher]::ExitAllFrames()})
 $win.Opacity=0
 $win.Show()
 $win.Opacity=1
-# icon!
-$size=4
-$bmp = [System.Drawing.Bitmap]::new(16*$size,16*$size)
-$jraw = [System.Drawing.Graphics]::FromImage($bmp) # hehehaha i love memeing on the jif ppl
-$jraw.Clear(($wpfBrushToJrawBrush.Invoke($btn.BorderBrush))[0].Color)
-$rect = [System.Drawing.Rectangle]::new(1*$size,1*$size,14*$size,14*$size)
-$jraw.FillRectangle(($wpfBrushToJrawBrush.Invoke($btn.Background))[0], $rect)
-$fg = ($wpfBrushToJrawBrush.Invoke($btn.Foreground))[0]
-$rect = [System.Drawing.Rectangle]::new(5*$size,4*$size,2*$size,8*$size)
-$jraw.FillRectangle($fg, $rect)
-$rect = [System.Drawing.Rectangle]::new(7*$size,8*$size,3*$size,2*$size)
-$jraw.FillRectangle($fg, $rect)
-$rect = [System.Drawing.Rectangle]::new(9*$size,9*$size,2*$size,3*$size)
-$jraw.FillRectangle($fg, $rect)
-$bmp.Save($icnPath,[System.Drawing.Imaging.ImageFormat]::Png)
-$jraw.Dispose()
-$bmp.Dispose()
-$bmp=$null
-$jraw=$null
-# icon!
-$win.Icon=$icnPath
+<#
+	# icon!
+	$size=4
+	$bmp = [System.Drawing.Bitmap]::new(16*$size,16*$size)
+	$jraw = [System.Drawing.Graphics]::FromImage($bmp) # hehehaha i love memeing on the jif ppl
+	$jraw.Clear(($wpfBrushToJrawBrush.Invoke($btn.BorderBrush))[0].Color)
+	$rect = [System.Drawing.Rectangle]::new(1*$size,1*$size,14*$size,14*$size)
+	$jraw.FillRectangle(($wpfBrushToJrawBrush.Invoke($btn.Background))[0], $rect)
+	$fg = ($wpfBrushToJrawBrush.Invoke($btn.Foreground))[0]
+	$rect = [System.Drawing.Rectangle]::new(5*$size,4*$size,2*$size,8*$size)
+	$jraw.FillRectangle($fg, $rect)
+	$rect = [System.Drawing.Rectangle]::new(7*$size,8*$size,3*$size,2*$size)
+	$jraw.FillRectangle($fg, $rect)
+	$rect = [System.Drawing.Rectangle]::new(9*$size,9*$size,2*$size,3*$size)
+	$jraw.FillRectangle($fg, $rect)
+	$bmp.Save($icnPath,[System.Drawing.Imaging.ImageFormat]::Png)
+	$jraw.Dispose()
+	$bmp.Dispose()
+	$bmp=$null
+	$jraw=$null
+	# icon!
+	$win.Icon=$icnPath
+#>
 $hWnd=[System.Windows.Interop.WindowInteropHelper]::new($win).Handle
 [User32]::SetWindowLongPtr($hWnd,-20,[IntPtr](([User32]::GetWindowLongPtr($hWnd,-20)).ToInt64()-bor(134217728)))|Out-Null
 [User32]::ShowWindow($hWnd,4)|Out-Null
@@ -100,4 +102,4 @@ $w=$null
 $win.Icon=$null
 [System.GC]::Collect()
 [System.GC]::WaitForPendingFinalizers()
-Remove-Item -Path $icnPath
+# Remove-Item -Path $icnPath
