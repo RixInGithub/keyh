@@ -7,10 +7,6 @@ using System;
 using System.Runtime.InteropServices;
 public class User32 {
 	[DllImport("user32.dll")]
-	public static extern IntPtr GetForegroundWindow();
-	[DllImport("user32.dll")]
-	public static extern bool SetForegroundWindow(IntPtr hWnd);
-	[DllImport("user32.dll")]
 	public static extern IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 	[DllImport("user32.dll")]
 	public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
@@ -50,7 +46,7 @@ $helper.StartInfo=({
 	return $start
 }).Invoke()[0]
 $helper.Start()|Out-Null
-$global:hStdin=[System.IO.StreamWriter]::new($helper.StandardInput.BaseStream)
+$w=({$global:hStdin=[System.IO.StreamWriter]::new($helper.StandardInput.BaseStream);return{$global:hStdin.BaseStream.WriteByte(48+$global:on);$global:hStdin.Flush();$global:hStdin.BaseStream.Flush()}}).Invoke()[0]
 
 $lck = $win.FindName("lck")
 $global:btn = $win.FindName("btn")
@@ -66,11 +62,7 @@ $lck.Add_Click({
 	$win.FindName("lht").Background=New-Object System.Windows.Media.SolidColorBrush([System.Windows.Media.Color]::FromArgb(0,1,1,1))
 })
 
-$global:btn.Add_Click({
-	$global:hStdin.BaseStream.WriteByte(48+$global:on)
-	$global:hStdin.Flush()
-	$global:hStdin.BaseStream.Flush()
-})
+$global:btn.Add_Click($w) # idk man
 
 $win.Add_ContentRendered({$win.FindName("lht").IsHitTestVisible=0})
 $win.Add_Closed({[System.Windows.Threading.Dispatcher]::ExitAllFrames()})
@@ -92,7 +84,7 @@ $rect = [System.Drawing.Rectangle]::new(7*$size,8*$size,3*$size,2*$size)
 $jraw.FillRectangle($fg, $rect)
 $rect = [System.Drawing.Rectangle]::new(9*$size,9*$size,2*$size,3*$size)
 $jraw.FillRectangle($fg, $rect)
-$bmp.Save($icnPath,[System.Drawing.Imaging.ImageFormat]::Png) # i used png in plant clicker too. so?
+$bmp.Save($icnPath,[System.Drawing.Imaging.ImageFormat]::Png)
 $jraw.Dispose()
 $bmp.Dispose()
 $bmp=$null
@@ -100,7 +92,7 @@ $jraw=$null
 # icon!
 $win.Icon=$icnPath
 $hWnd=[System.Windows.Interop.WindowInteropHelper]::new($win).Handle
-[User32]::SetWindowLongPtr($hWnd,-20,[IntPtr](([User32]::GetWindowLongPtr($hWnd,-20)).ToInt64()-bor(134217728))) | Out-Null
+[User32]::SetWindowLongPtr($hWnd,-20,[IntPtr](([User32]::GetWindowLongPtr($hWnd,-20)).ToInt64()-bor(134217728)))|Out-Null
 [User32]::ShowWindow($hWnd,4)|Out-Null
 [System.Windows.Threading.Dispatcher]::Run()
 Stop-Process -Id $helper.Id
@@ -108,4 +100,4 @@ $w=$null
 $win.Icon=$null
 [System.GC]::Collect()
 [System.GC]::WaitForPendingFinalizers()
-Remove-Item -Path $icnPath -Force
+Remove-Item -Path $icnPath
